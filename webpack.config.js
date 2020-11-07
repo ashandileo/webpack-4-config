@@ -1,5 +1,6 @@
 const path = require('path')
 const autoprefixer = require('autoprefixer')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   mode: 'development',
@@ -27,19 +28,35 @@ module.exports = {
             options: {
               importLoaders: 1,
               modules: {
-                localIdentName: '[name]__[local]__[hash:bash64:5]'
+                localIdentName: '[name]__[local]__[hash:base64:5]'
               }
             }
           },
           {
             loader: 'postcss-loader',
             options: {
-              ident: 'postcss',
-              plugins: () => [autoprefixer()]
+              postcssOptions: {
+                plugins: () => [
+                  autoprefixer({
+                    browsers: ["> 1%", "last 2 versions"]
+                  })
+                ]
+              }
             }
           }
         ]
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/,
+        loader: 'url-loader?limit=8000&name=images/[name].[ext]'
       }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: __dirname + '/src/index.html',
+      filename: 'index.html',
+      inject: 'body'
+    })
+  ]
 }
